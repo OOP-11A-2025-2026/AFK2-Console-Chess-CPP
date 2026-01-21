@@ -28,6 +28,10 @@
 #include "chess/util/AlgebraicNotationUtil.hpp"
 #include "chess/pgn/PgnIO.hpp"
 
+//Game Controller Flow Tests include
+#include "../../tests/unit/engine/GameControllerFlowTests.cpp"
+
+
 using namespace chess::core;
 using namespace chess::pieces;
 using namespace chess::rules;
@@ -361,6 +365,7 @@ int main() {
     testMoveValidator();
     testAlgebraicNotation();
     testPgnIO();
+    runGameControllerFlowTests();
 
     std::cout << "\n======================================" << std::endl;
     std::cout << "          Tests Completed             " << std::endl;
