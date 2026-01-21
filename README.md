@@ -50,6 +50,15 @@ A small, object-oriented console chess project in C++17. It includes core move v
   2. `make run` (runs sanity checks and PGN round-trip; writes `sample_game.pgn`)
 - Run unit tests (if gtest installed): `make test`
 
+### From Scratch (copy/paste)
+```bash
+git clone <repo-url> AFK2-Console-Chess-CPP
+cd AFK2-Console-Chess-CPP
+make build
+make run          # runs console harness + PGN round-trip
+# make test       # optional, requires GoogleTest
+```
+
 ### Example Session (`make run`)
 - Runs a suite of inline tests (color/position/move/board/pieces/player/clock/game/notation/validator).
 - Executes a PGN save/load round-trip and writes `sample_game.pgn` in the project root.
