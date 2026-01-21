@@ -45,8 +45,9 @@ A small, object-oriented console chess project in C++17. It includes core move v
 ## Usage
 
 ### Quick Start
-- Build: `make build`
-- Run console harness (sanity tests + PGN round-trip): `make run`
+- From a clean checkout:
+  1. `make build`
+  2. `make run` (runs sanity checks and PGN round-trip; writes `sample_game.pgn`)
 - Run unit tests (if gtest installed): `make test`
 
 ### Example Session (`make run`)
