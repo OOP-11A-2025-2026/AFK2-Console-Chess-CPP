@@ -26,6 +26,7 @@
 // Rules and utilities
 #include "chess/rules/MoveValidator.hpp"
 #include "chess/util/AlgebraicNotationUtil.hpp"
+#include "chess/pgn/PgnIO.hpp"
 
 using namespace chess::core;
 using namespace chess::pieces;
@@ -300,6 +301,50 @@ void testAlgebraicNotation() {
     printTest("parseMove 'e2 e4' succeeds", parsed2 != nullptr);
 }
 
+void testPgnIO() {
+    std::cout << "\n=== Testing PGN IO ===" << std::endl;
+
+    auto white = std::make_unique<Player>("Alice", Color::WHITE);
+    auto black = std::make_unique<Player>("Bob", Color::BLACK);
+    Game game(std::move(white), std::move(black));
+
+    auto applyMoveIfValid = [&](const std::string& san, Color color) {
+        Board& board = game.getBoard();
+        auto movePtr = AlgebraicNotationUtil::parseMove(san, board, color);
+        if (!movePtr) return false;
+        if (!MoveValidator::isValidMove(board, *movePtr, color)) return false;
+        board.movePiece(movePtr->getFrom(), movePtr->getTo());
+        game.addMove(*movePtr);
+        game.switchTurn();
+        return true;
+    };
+
+    bool whiteMove = applyMoveIfValid("e2e4", Color::WHITE);
+    bool blackMove = applyMoveIfValid("e7e5", Color::BLACK);
+    printTest("Apply two opening moves", whiteMove && blackMove);
+
+    const std::string pgnPath = "sample_game.pgn";
+    try {
+        chess::pgn::PgnIO::saveToFile(pgnPath, game);
+        printTest("Saved PGN to sample_game.pgn", true);
+    } catch (...) {
+        printTest("Saved PGN to sample_game.pgn", false);
+        return;
+    }
+
+    try {
+        Game loaded(std::make_unique<Player>("Alice", Color::WHITE),
+                    std::make_unique<Player>("Bob", Color::BLACK));
+        auto info = chess::pgn::PgnIO::loadFromFile(pgnPath, loaded);
+        bool correctTurn = loaded.getCurrentPlayerColor() == Color::WHITE;  // after two moves
+        bool twoMoves = loaded.getMoveHistory().size() == 2;
+        printTest("Loaded PGN (2 moves, white to move)", correctTurn && twoMoves);
+        printTest("Result token captured", !info.resultToken.empty());
+    } catch (...) {
+        printTest("Loaded PGN file", false);
+    }
+}
+
 int main() {
     std::cout << "======================================" << std::endl;
     std::cout << "     AFK2 C++ Chess Engine Tests      " << std::endl;
@@ -315,6 +360,7 @@ int main() {
     testGame();
     testMoveValidator();
     testAlgebraicNotation();
+    testPgnIO();
 
     std::cout << "\n======================================" << std::endl;
     std::cout << "          Tests Completed             " << std::endl;
