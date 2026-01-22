@@ -37,6 +37,8 @@ public:
 
     static void displayPlayerTurn(const chess::core::Player& player);
 
+    static void displayPlayerTurnWithTime(const chess::core::Player& player, const chess::core::Game& game);
+
     static void displayPromptForInput();
 
     static void clearScreen();

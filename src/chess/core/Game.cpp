@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "../util/AlgebraicNotationUtil.hpp"
 #include <stdexcept>
 
 namespace chess::core {
@@ -91,6 +92,56 @@ void Game::reset() {
     }
     clock->reset();
     clock->startTurn(Color::WHITE);
+}
+
+void Game::applyMove(const Move& move) {
+    if (gameState != GameState::ONGOING) {
+        throw std::runtime_error("Game is not in ongoing state");
+    }
+
+    // Move piece on board
+    board->movePiece(move.getFrom(), move.getTo());
+
+    // Add to history
+    addMove(move);
+
+    // Switch turn
+    switchTurn();
+
+    // Update game state
+    updateState();
+}
+
+void Game::applyMoveAlgebraic(const std::string& notation) {
+    if (notation.empty()) {
+        throw std::invalid_argument("Move notation cannot be empty");
+    }
+
+    // Parse the algebraic notation to a Move object
+    auto move = util::AlgebraicNotationUtil::parseMove(notation, *board, currentPlayer);
+    
+    if (!move) {
+        throw std::invalid_argument("Invalid move notation");
+    }
+
+    // Apply the move
+    applyMove(*move);
+}
+
+void Game::resign(Color resigningColor) {
+    if (gameState != GameState::ONGOING) {
+        throw std::runtime_error("Game is not ongoing");
+    }
+    gameState = GameState::RESIGNATION;
+}
+
+void Game::updateState() {
+    // TODO: Implement proper game state detection
+    // For now, keep as ongoing
+    if (gameState == GameState::ONGOING) {
+        // Check for checkmate, stalemate, check, etc.
+        // This requires access to MoveValidator and CheckDetector
+    }
 }
 
 }  // namespace chess::core

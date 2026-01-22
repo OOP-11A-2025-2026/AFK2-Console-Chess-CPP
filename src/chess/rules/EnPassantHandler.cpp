@@ -7,7 +7,7 @@ using namespace chess::core;
 
 bool EnPassantHandler::isValidEnPassant(const Board& board, const Move& move,
                                        Color playerColor, const Move* lastMove) {
-    if (!move.getIsEnPassant()) {
+    if (!move.isEnPassant_()) {
         return false;
     }
 

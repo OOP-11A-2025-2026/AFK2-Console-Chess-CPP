@@ -28,10 +28,6 @@
 #include "chess/util/AlgebraicNotationUtil.hpp"
 #include "chess/pgn/PgnIO.hpp"
 
-//Game Controller Flow Tests include
-#include "../../tests/unit/engine/GameControllerFlowTests.cpp"
-
-
 using namespace chess::core;
 using namespace chess::pieces;
 using namespace chess::rules;
@@ -56,7 +52,6 @@ void testColor() {
     Color white = Color::WHITE;
     Color black = Color::BLACK;
 
-    // Test opposite
     printTest("Color::opposite(WHITE) == BLACK", opposite(white) == Color::BLACK);
     printTest("Color::opposite(BLACK) == WHITE", opposite(black) == Color::WHITE);
 }
@@ -64,7 +59,6 @@ void testColor() {
 void testPosition() {
     std::cout << "\n=== Testing Position ===" << std::endl;
 
-    // Test valid position creation
     try {
         Position p1(4, 4);
         printTest("Create Position(4, 4)", true);
@@ -72,7 +66,6 @@ void testPosition() {
         printTest("Create Position(4, 4)", false);
     }
 
-    // Test invalid position throws
     bool exceptionThrown = false;
     try {
         Position p2(8, 8);
@@ -81,16 +74,13 @@ void testPosition() {
     }
     printTest("Position(8, 8) throws std::invalid_argument", exceptionThrown);
 
-    // Test algebraic notation
     Position e4(4, 3);
     printTest("Position(4, 3).toAlgebraic() == 'e4'", e4.toAlgebraic() == "e4");
 
-    // Test parsing algebraic notation
     Position e4_parsed = Position::fromAlgebraic("e4");
     printTest("Position::fromAlgebraic('e4') == Position(4, 3)", 
               e4_parsed == Position(4, 3));
 
-    // Test equality
     Position p1(0, 0);
     Position p2(0, 0);
     printTest("Position(0, 0) == Position(0, 0)", p1 == p2);
@@ -122,7 +112,6 @@ void testBoard() {
 
     Board board;
 
-    // Test initial setup
     Piece* e2_pawn = board.getPiece(Position(4, 1));
     printTest("White pawn at e2", e2_pawn != nullptr && 
               e2_pawn->getColor() == Color::WHITE &&
@@ -131,14 +120,12 @@ void testBoard() {
     Piece* e1_empty = board.getPiece(Position(4, 2));
     printTest("e3 is empty", e1_empty == nullptr);
 
-    // Test king positions
     Position whiteKingPos = board.getKingPosition(Color::WHITE);
     printTest("White king at e1", whiteKingPos == Position(4, 0));
 
     Position blackKingPos = board.getKingPosition(Color::BLACK);
     printTest("Black king at e8", blackKingPos == Position(4, 7));
 
-    // Test move piece
     try {
         Position from(4, 1);
         Position to(4, 3);
@@ -150,7 +137,6 @@ void testBoard() {
         printTest("Move pawn e2->e4", false);
     }
 
-    // Test deep copy
     Board boardCopy = board;
     printTest("Board deep copy", 
               boardCopy.getPiece(Position(4, 3)) != nullptr &&
@@ -162,7 +148,6 @@ void testPieces() {
 
     Board board;
 
-    // Test pawn destinations
     Piece* pawn = board.getPiece(Position(4, 1));
     auto pawnDests = pawn->getLegalDestinations(board);
     printTest("Pawn at e2 has legal moves", pawnDests.size() == 2);
@@ -171,17 +156,14 @@ void testPieces() {
     printTest("Pawn can move to e4", 
               std::find(pawnDests.begin(), pawnDests.end(), Position(4, 3)) != pawnDests.end());
 
-    // Test knight destinations
     Piece* knight = board.getPiece(Position(1, 0));
     auto knightDests = knight->getLegalDestinations(board);
     printTest("Knight at b1 has 2 legal moves", knightDests.size() == 2);
 
-    // Test rook is blocked
     Piece* rook = board.getPiece(Position(0, 0));
     auto rookDests = rook->getLegalDestinations(board);
     printTest("Rook at a1 has no legal moves (blocked)", rookDests.size() == 0);
 
-    // Test piece symbols
     Piece* king = board.getPiece(Position(4, 0));
     printTest("White king symbol is K", king->getSymbol() == 'K');
 
@@ -202,7 +184,6 @@ void testPlayer() {
         printTest("Create Player 'Alice' (WHITE)", false);
     }
 
-    // Test empty name throws
     bool exceptionThrown = false;
     try {
         Player p2("", Color::BLACK);
@@ -216,7 +197,7 @@ void testChessClock() {
     std::cout << "\n=== Testing ChessClock ===" << std::endl;
 
     try {
-        ChessClock clock(60000);  // 60 seconds
+        ChessClock clock(60000);
         printTest("Create ChessClock with 60 seconds", true);
 
         long remaining = clock.getRemainingTime(Color::WHITE);
@@ -233,7 +214,6 @@ void testChessClock() {
         printTest("ChessClock operations", false);
     }
 
-    // Test invalid clock throws
     bool exceptionThrown = false;
     try {
         ChessClock badClock(-1000);
@@ -267,18 +247,15 @@ void testMoveValidator() {
 
     Board board;
 
-    // Test valid pawn move
     Piece* pawn = board.getPiece(Position(4, 1));
     Move move1 = Move::Builder(Position(4, 1), Position(4, 3), pawn).build();
     bool valid1 = MoveValidator::isValidMove(board, move1, Color::WHITE);
     printTest("Pawn e2->e4 is valid", valid1);
 
-    // Test invalid pawn move (backward)
     Move move2 = Move::Builder(Position(4, 3), Position(4, 1), pawn).build();
     bool valid2 = MoveValidator::isValidMove(board, move2, Color::WHITE);
     printTest("Pawn e4->e2 is invalid", !valid2);
 
-    // Test moving opponent's piece
     Piece* blackPawn = board.getPiece(Position(4, 6));
     Move move3 = Move::Builder(Position(4, 6), Position(4, 5), blackPawn).build();
     bool valid3 = MoveValidator::isValidMove(board, move3, Color::WHITE);
@@ -296,11 +273,9 @@ void testAlgebraicNotation() {
     std::string longAlg = AlgebraicNotationUtil::toLongAlgebraic(move);
     printTest("toLongAlgebraic e2->e4 == 'e2e4'", longAlg == "e2e4");
 
-    // Test parsing
     auto parsed = AlgebraicNotationUtil::parseMove("e2e4", board, Color::WHITE);
     printTest("parseMove 'e2e4' succeeds", parsed != nullptr);
 
-    // Test parsing with space
     auto parsed2 = AlgebraicNotationUtil::parseMove("e2 e4", board, Color::WHITE);
     printTest("parseMove 'e2 e4' succeeds", parsed2 != nullptr);
 }
@@ -340,7 +315,7 @@ void testPgnIO() {
         Game loaded(std::make_unique<Player>("Alice", Color::WHITE),
                     std::make_unique<Player>("Bob", Color::BLACK));
         auto info = chess::pgn::PgnIO::loadFromFile(pgnPath, loaded);
-        bool correctTurn = loaded.getCurrentPlayerColor() == Color::WHITE;  // after two moves
+        bool correctTurn = loaded.getCurrentPlayerColor() == Color::WHITE;
         bool twoMoves = loaded.getMoveHistory().size() == 2;
         printTest("Loaded PGN (2 moves, white to move)", correctTurn && twoMoves);
         printTest("Result token captured", !info.resultToken.empty());
@@ -365,7 +340,6 @@ int main() {
     testMoveValidator();
     testAlgebraicNotation();
     testPgnIO();
-    runGameControllerFlowTests();
 
     std::cout << "\n======================================" << std::endl;
     std::cout << "          Tests Completed             " << std::endl;

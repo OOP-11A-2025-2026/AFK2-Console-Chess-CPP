@@ -7,7 +7,7 @@ namespace chess::rules {
 using namespace chess::core;
 
 bool CastlingHandler::isValidCastle(const Board& board, const Move& move, Color playerColor) {
-    if (!move.getIsCastling()) {
+    if (!move.isCastling_()) {
         return false;
     }
 
@@ -16,7 +16,7 @@ bool CastlingHandler::isValidCastle(const Board& board, const Move& move, Color 
         return false;
     }
 
-    if (movingPiece->hasMoved()) {
+    if (movingPiece->hasMoved_()) {
         return false;
     }
 
@@ -38,7 +38,7 @@ bool CastlingHandler::canCastleKingSide(const Board& board, Color color) {
     Piece* king = board.getPiece(Position(4, rank));
     Piece* rook = board.getPiece(Position(7, rank));
 
-    if (!king || !rook || king->hasMoved() || rook->hasMoved()) {
+    if (!king || !rook || king->hasMoved_() || rook->hasMoved_()) {
         return false;
     }
 
@@ -55,7 +55,7 @@ bool CastlingHandler::canCastleQueenSide(const Board& board, Color color) {
     Piece* king = board.getPiece(Position(4, rank));
     Piece* rook = board.getPiece(Position(0, rank));
 
-    if (!king || !rook || king->hasMoved() || rook->hasMoved()) {
+    if (!king || !rook || king->hasMoved_() || rook->hasMoved_()) {
         return false;
     }
 

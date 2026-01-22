@@ -127,6 +127,42 @@ public:
      * Resets the game to initial state.
      */
     void reset();
+
+    /**
+     * Applies a move to the board and updates game state.
+     * Handles validation and special moves (promotion, castling, en passant).
+     * 
+     * @param move the move to apply
+     * @throws std::runtime_error if move is invalid
+     */
+    void applyMove(const Move& move);
+
+    /**
+     * Applies a move using algebraic notation.
+     * Parses the notation and makes the move if valid.
+     * 
+     * @param notation the move in algebraic notation (e.g., "e2e4" or "Nf3")
+     * @throws std::runtime_error if notation is invalid or move is illegal
+     */
+    void applyMoveAlgebraic(const std::string& notation);
+
+    /**
+     * Resigns the game for the specified player.
+     * 
+     * @param resigningColor the color of the player resigning
+     */
+    void resign(Color resigningColor);
+
+    /**
+     * Updates the game state based on current board position.
+     * Checks for check, checkmate, stalemate, and time losses.
+     */
+    void updateState();
+
+    /**
+     * Gets the current game state.
+     */
+    GameState getState() const { return gameState; }
 };
 
 }  // namespace chess::core

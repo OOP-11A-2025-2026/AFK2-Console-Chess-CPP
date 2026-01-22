@@ -10,7 +10,9 @@ GameController::GameController()
 
 void GameController::newGame(const core::Player& white,
                              const core::Player& black) {
-    game = std::make_unique<core::Game>(white, black);
+    auto whitePlayer = std::make_unique<core::Player>(white.getName(), white.getColor());
+    auto blackPlayer = std::make_unique<core::Player>(black.getName(), black.getColor());
+    game = std::make_unique<core::Game>(std::move(whitePlayer), std::move(blackPlayer));
     undoManager->clear();
 }
 
@@ -18,12 +20,12 @@ void GameController::loadGame(const std::string& pgnFile) {
     if (pgnFile.empty())
         throw std::invalid_argument("PGN file path is empty");
 
-    PgnParser parser;
+    pgn::PgnParser parser;
     auto parsedGame = parser.parse(pgnFile);
 
     game = std::make_unique<core::Game>(
-        parsedGame.whitePlayer,
-        parsedGame.blackPlayer
+        std::move(parsedGame.whitePlayer),
+        std::move(parsedGame.blackPlayer)
     );
 
     undoManager->clear();
@@ -39,7 +41,7 @@ void GameController::saveGame(const std::string& pgnFile) const {
     if (pgnFile.empty())
         throw std::invalid_argument("PGN file path is empty");
 
-    PgnWriter writer;
+    pgn::PgnWriter writer;
     writer.write(pgnFile, *game);
 }
 
@@ -69,12 +71,13 @@ void GameController::makeMoveAlgebraic(const std::string& notation) {
 
 void GameController::undo() {
     ensureGameExists();
-    undoManager->undo(*game);
+    // TODO: Implement undo in UndoManager
+    throw std::runtime_error("Undo not yet implemented");
 }
 
 void GameController::offerDraw() {
     ensureGameExists();
-    game->offerDraw();
+    game->offerDraw(game->getCurrentPlayerColor());
 }
 
 void GameController::acceptDraw() {

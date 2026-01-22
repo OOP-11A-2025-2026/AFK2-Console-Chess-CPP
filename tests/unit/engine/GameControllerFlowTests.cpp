@@ -101,10 +101,10 @@ void testUndoRestoresTurn() {
     GameController controller;
     startNewGame(controller);
 
-    Color before = controller.getGame().getCurrentTurn();
+    Color before = controller.getGame().getCurrentPlayerColor();
     playMove(controller, "e2e4");
     undoMove(controller);
-    Color after = controller.getGame().getCurrentTurn();
+    Color after = controller.getGame().getCurrentPlayerColor();
 
     assert(before == after);
     pass();

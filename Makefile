@@ -16,12 +16,12 @@ TEST_OBJ_DIR := $(TEST_BUILD_DIR)/obj
 
 # Source files
 SOURCES := $(shell find $(SRC_DIR)/chess -name "*.cpp" -not -name "main.cpp")
-MAIN_SRC := $(SRC_DIR)/main.cpp
+MAIN_SRC := $(SRC_DIR)/game.cpp
 TEST_SOURCES := $(shell find tests -name "*.cpp")
 
 # Object files
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SOURCES))
-MAIN_OBJ := $(OBJ_DIR)/main.o
+MAIN_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(MAIN_SRC))
 TEST_OBJECTS := $(patsubst tests/%.cpp,$(TEST_OBJ_DIR)/%.o,$(TEST_SOURCES))
 
 # Executables
